@@ -1,0 +1,7 @@
+[theme]
+base="light"
+primaryColor="#146C94"            # Calm deep teal accent
+backgroundColor="#F9FAFB"         # Very light neutral background
+secondaryBackgroundColor="#FFFFFF" # Clean white for cards/containers
+textColor="#1A1A1A"               # Deep gray for high readability
+font="sans serif"
