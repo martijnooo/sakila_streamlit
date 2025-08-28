@@ -74,9 +74,25 @@ def top_n_rented_movies_by_store(engine, n=5, year=2005):
 
         return df
     
-def get_movies(engine):
+def get_movie_info(engine):
         with engine.connect() as conn:
-            result = conn.execute(text(f"""select f.title, f.description from film f"""))
+            result = conn.execute(text(f"""SELECT 
+                                        f.title,
+                                        f.description,
+                                        ANY_VALUE(l.name) AS language,
+                                        ANY_VALUE(c.name) AS category,
+                                        f.release_year,
+                                        f.length
+                                    FROM film f
+                                    JOIN language l ON f.language_id = l.language_id
+                                    JOIN film_category fc ON f.film_id = fc.film_id
+                                    JOIN category c ON fc.category_id = c.category_id
+                                    JOIN film_actor fa ON f.film_id = fa.film_id
+                                    JOIN actor a ON fa.actor_id = a.actor_id
+                                    LEFT JOIN inventory i ON f.film_id = i.film_id
+                                    LEFT JOIN rental r ON i.inventory_id = r.inventory_id
+                                    GROUP BY f.film_id;
+                                    """))
             df = pd.DataFrame(result)
 
         return df
