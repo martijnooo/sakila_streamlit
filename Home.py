@@ -1,11 +1,14 @@
 import streamlit as st
+import os
+
 st.set_page_config(
     page_title="Movie Recommender Home",
     page_icon="🎨",
     layout="wide"
 )
 
-st.image(r"assets\Home_movie2.png")
+img_path = os.path.join("assets", "Home_movie2.png")
+st.image(img_path)
 
 st.title("Movie Recommender")
 
