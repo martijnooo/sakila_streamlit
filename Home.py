@@ -9,7 +9,9 @@ st.set_page_config(
 
 # Hero image
 img_path = os.path.join("assets", "Home_movie2.png")
-st.image(img_path, use_column_width=True)
+st.image(img_path, width="stretch")
+
+
 
 # Title
 st.markdown(
