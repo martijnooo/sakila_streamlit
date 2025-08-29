@@ -27,7 +27,9 @@ def load_embeddings(path):
 
 model = load_model()
 movies = load_movies()
-embeddings = load_embeddings("../embeddings/movie_embeddings.npy")
+BASE_DIR = os.path.dirname(__file__)
+embeddings_path = os.path.join(BASE_DIR, "..", "embeddings", "movie_embeddings.npy")
+embeddings = np.load(embeddings_path, allow_pickle=True)
 
 def movie_recommendations(query, top_n=3):
     query_vector = model.encode([query])
