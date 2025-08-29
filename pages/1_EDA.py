@@ -11,7 +11,8 @@ st.header("Exploratory Data Analysis")
 
 col1, col2 = st.columns(2, gap="large")
 with col1:
-    cities = st.multiselect(label="**Store**", options=city_options(), default=city_options())
+    all_cities = city_options()
+    cities = st.multiselect(label="**Store**", options=all_cities, default=all_cities)
 with col2:
     min_date, max_date = date_options()
     dates = st.slider("**Date Range**", min_date, max_date, (min_date,max_date))

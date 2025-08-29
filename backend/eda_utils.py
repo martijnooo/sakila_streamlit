@@ -92,3 +92,4 @@ def date_options():
     min_date = df.rental_date.min()
     max_date = df.rental_date.max()
     return min_date, max_date
+

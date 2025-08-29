@@ -3,34 +3,15 @@ from dotenv import load_dotenv
 from sqlalchemy import create_engine, text
 from sqlalchemy.engine import URL
 import pandas as pd
+import streamlit as st
 
-# Load .env file
-load_dotenv()
 
+db_connection_string = st.secrets["SUPABASE_CONNECTION_STRING"]
+
+@st.cache_resource 
 def sql_connection():
-    try:
-        # Try to get full connection string first, then fallback to individual components
-        supabase_connection_string = os.getenv("SUPABASE_CONNECTION_STRING")
-        
-        if supabase_connection_string:
-            # Use the full connection string directly from Supabase
-            connection_string = supabase_connection_string
-        else:
-            # Fallback to building from components
-            supabase_url = os.getenv("SUPABASE_DB_URL")
-            supabase_password = os.getenv("SUPABASE_DB_PASSWORD")
-            
-            if not supabase_url or not supabase_password:
-                raise ValueError("Missing Supabase credentials. Please check your .env file.")
-            
-            # Create PostgreSQL connection string for Supabase
-            # Format: postgresql://postgres:[password]@[host]:[port]/postgres
-            connection_string = f"postgresql://postgres:{supabase_password}@{supabase_url}"
-        
-        # Create SQL engine
-        engine = create_engine(connection_string)
-    except Exception as e:
-        return None  # Return empty DataFrame on error
+    # Create SQL engine
+    engine = create_engine(db_connection_string)
     return engine
 
 def daily_rentals_by_store(engine, year=2005):
@@ -48,7 +29,7 @@ def daily_rentals_by_store(engine, year=2005):
                 ON a.city_id = c.city_id
             WHERE EXTRACT(YEAR FROM r.rental_date) = {year}
         """))
-        df = pd.DataFrame(result, columns=result.keys())  # keep column names
+        df = pd.DataFrame(result.mappings().all())
         df["rental_date"] = pd.to_datetime(df["rental_date"]).dt.date
         return df.groupby(["city", "rental_date"]).agg({"rental_id": "count"})
 
@@ -70,7 +51,8 @@ def revenue_by_store(engine):
             JOIN city c
                 ON a.city_id = c.city_id;
         """))
-        df = pd.DataFrame(result, columns=result.keys())
+        df = pd.DataFrame(result.mappings().all())
+
         return df
 
 
@@ -92,7 +74,8 @@ def top_n_rented_movies_by_store(engine, n=5, year=2005):
                 ON a.city_id = c.city_id
             WHERE EXTRACT(YEAR FROM r.rental_date) = {year};
         """))
-        df = pd.DataFrame(result, columns=result.keys())
+        df = pd.DataFrame(result.mappings().all())
+
         return df
 
     
@@ -124,7 +107,8 @@ def get_movie_info(engine):
                 ON i.inventory_id = r.inventory_id
             GROUP BY f.film_id;
         """))
-        df = pd.DataFrame(result, columns=result.keys())
+        df = pd.DataFrame(result.mappings().all())
+
         return df
 
 
